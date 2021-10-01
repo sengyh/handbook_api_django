@@ -23,3 +23,9 @@ def subject_check(code):
   if (sub_match):
     return True
   return False
+
+def level_check(level):
+  level_match = re.match(r'^[1-9]$', level)
+  if (level_match):
+    return True
+  return False

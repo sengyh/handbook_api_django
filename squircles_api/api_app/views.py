@@ -10,7 +10,7 @@ import logging
 from .serializers import CourseSerializer, CourseGraphSerializer, DegreeSerializer, SpecialisationSerializer, SubjectSerializer
 logging.basicConfig(level=logging.INFO)
 import re
-from .input_checkers import course_code_check, spec_code_check, deg_code_check, subject_check
+from .input_checkers import course_code_check, level_check, spec_code_check, deg_code_check, subject_check
 
 
 # Create your views here.
@@ -107,6 +107,27 @@ def get_all_subject_courses(request, sub_code):
     sub_courses = SubjectSerializer(subject).data 
     sub_code = sub_courses['code']
     courses_qobj = Courses.objects.filter(subject=sub_code).values('code')
+    all_sub_courses = []
+    for course_q in courses_qobj:
+      all_sub_courses.append(course_q['code'])
+    sub_courses['courses'] = sorted(all_sub_courses)
+    return JsonResponse(sub_courses, json_dumps_params={'indent': 2})
+  
+@api_view(['GET'])
+def get_all_subject_courses_level(request, sub_code, level):
+  if not subject_check(sub_code) or not level_check(level):
+    return JsonResponse({'error': 'Invalid code. Subject code must match the pattern [A-Z]{4} and level must be between 1-9'}, status=status.HTTP_400_BAD_REQUEST)
+
+  try: 
+    sub_code = sub_code.upper()
+    subject = Subjects.objects.get(pk=sub_code)
+  except Subjects.DoesNotExist:
+     return JsonResponse({'message': 'This subject does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+  if request.method == 'GET':
+    sub_courses = SubjectSerializer(subject).data 
+    sub_code = sub_courses['code']
+    courses_qobj = Courses.objects.filter(subject=sub_code, level=level).values('code')
     all_sub_courses = []
     for course_q in courses_qobj:
       all_sub_courses.append(course_q['code'])
