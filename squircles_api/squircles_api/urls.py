@@ -19,11 +19,14 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('courses/<str:course_code>', views.get_course_full),
-    path('courses/<str:course_code>/node', views.get_course_node),
-    path('specialisations/<str:spec_id>', views.get_specialisation),
-    path('degrees/<str:deg_id>', views.get_degree),
     path('subjects/', views.get_all_subjects),
     path('subjects/<str:sub_code>', views.get_all_subject_courses),
-    path('subjects/<str:sub_code>/level/<str:level>', views.get_all_subject_courses_level)
+    path('subjects/<str:sub_code>/level/<str:level>', views.get_all_subject_courses_level),
+    path('courses', views.get_all_courses),
+    path('courses/<str:course_code>', views.get_course_full),
+    path('courses/<str:course_code>/node', views.get_course_node),
+    path('specialisations', views.get_all_specialisations),
+    path('specialisations/<str:spec_id>', views.get_specialisation),
+    path('degrees', views.get_all_degrees),
+    path('degrees/<str:deg_id>', views.get_degree)
 ]

@@ -16,6 +16,20 @@ from .input_checkers import course_code_check, level_check, spec_code_check, deg
 # Create your views here.
 
 @api_view(['GET'])
+def get_all_courses(request):
+  try: 
+    courses = Courses.objects.all().values('code', 'name')
+  except Courses.DoesNotExist: 
+    return JsonResponse({'error': 'There are no courses to be found'}, status=status.HTTP_404_NOT_FOUND) 
+
+  if request.method == 'GET':
+    all_courses = {}
+    for course in courses:
+      all_courses[course['code']] = course['name']
+    return JsonResponse(all_courses, json_dumps_params={'indent': 2}) 
+
+
+@api_view(['GET'])
 def get_course_full(request, course_code):
   if not course_code_check(course_code):
     return JsonResponse({'error': 'Invalid code. Course codes must match the pattern [A-Z]{4}[0-9]{4}'}, status=status.HTTP_400_BAD_REQUEST) 
@@ -54,6 +68,19 @@ def get_course_node(request, course_code):
 
 
 @api_view(['GET'])
+def get_all_specialisations(request):
+  try: 
+    specs = Specialisations.objects.all().values('code', 'name')
+  except Specialisations.DoesNotExist: 
+    return JsonResponse({'message': 'This specialisation does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+  
+  if request.method == 'GET':
+    all_specialisations = {}
+    for spec in specs:
+      all_specialisations[spec['code']] = spec['name'] 
+    return JsonResponse(all_specialisations, json_dumps_params={'indent': 2})
+
+@api_view(['GET'])
 def get_specialisation(request, spec_id):
   if not spec_code_check(spec_id):
     return JsonResponse({'error': 'Invalid code. Specialisation code must match the pattern [A-Z]{5}[12H]'}, status=status.HTTP_400_BAD_REQUEST) 
@@ -70,6 +97,20 @@ def get_specialisation(request, spec_id):
 
 
 @api_view(['GET'])
+def get_all_degrees(request):
+  try: 
+    degrees = Degrees.objects.all().values('code', 'name')
+  except Degrees.DoesNotExist: 
+    return JsonResponse({'message': 'This degree does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+
+  if request.method == 'GET': 
+    all_degrees = {}
+    for degree in degrees:
+      all_degrees[degree['code']] = degree['name']
+    return JsonResponse(all_degrees, json_dumps_params={'indent': 2}) 
+
+
+@api_view(['GET'])
 def get_degree(request, deg_id):
   if not deg_code_check(deg_id):
     return JsonResponse({'error': 'Invalid code. Degree code must match the pattern [0-9]{4}'}, status=status.HTTP_400_BAD_REQUEST) 
@@ -83,6 +124,7 @@ def get_degree(request, deg_id):
     degree_serialized = DegreeSerializer(degree)
     return JsonResponse(degree_serialized.data, json_dumps_params={'indent': 2}) 
 
+
 @api_view(['GET'])
 def get_all_subjects(request):
   if request.method == 'GET':
@@ -91,6 +133,7 @@ def get_all_subjects(request):
     for sub in subjects:
       all_subs[sub.code] = sub.name
     return JsonResponse(all_subs, json_dumps_params={'indent': 2})
+
 
 @api_view(['GET'])
 def get_all_subject_courses(request, sub_code):
@@ -113,6 +156,7 @@ def get_all_subject_courses(request, sub_code):
     sub_courses['courses'] = sorted(all_sub_courses)
     return JsonResponse(sub_courses, json_dumps_params={'indent': 2})
   
+
 @api_view(['GET'])
 def get_all_subject_courses_level(request, sub_code, level):
   if not subject_check(sub_code) or not level_check(level):
