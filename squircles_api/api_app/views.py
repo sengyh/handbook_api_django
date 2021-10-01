@@ -1,14 +1,16 @@
+import json
+from django.db.models.query_utils import subclasses
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
-from .models import CourseTerms, Courses, Degrees, Specialisations
+from .models import CourseTerms, Courses, Degrees, Specialisations, Subjects
 from rest_framework.decorators import api_view
 from rest_framework import status
 import logging
-from .serializers import CourseSerializer, CourseGraphSerializer, DegreeSerializer, SpecialisationSerializer
+from .serializers import CourseSerializer, CourseGraphSerializer, DegreeSerializer, SpecialisationSerializer, SubjectSerializer
 logging.basicConfig(level=logging.INFO)
 import re
-from .input_checkers import course_code_check, spec_code_check, deg_code_check
+from .input_checkers import course_code_check, spec_code_check, deg_code_check, subject_check
 
 
 # Create your views here.
@@ -34,6 +36,7 @@ def get_course_full(request, course_code):
     full_course_info['terms'] = terms
     return JsonResponse(full_course_info, json_dumps_params={'indent': 2}) 
 
+
 @api_view(['GET'])
 def get_course_node(request, course_code):
   if not course_code_check(course_code):
@@ -53,7 +56,7 @@ def get_course_node(request, course_code):
 @api_view(['GET'])
 def get_specialisation(request, spec_id):
   if not spec_code_check(spec_id):
-    return JsonResponse({'error': 'Invalid code. Specialisation code must match the pattern [A-Z]{5}[12H]{4}'}, status=status.HTTP_400_BAD_REQUEST) 
+    return JsonResponse({'error': 'Invalid code. Specialisation code must match the pattern [A-Z]{5}[12H]'}, status=status.HTTP_400_BAD_REQUEST) 
 
   try: 
     spec_id = spec_id.upper()
@@ -65,11 +68,12 @@ def get_specialisation(request, spec_id):
     spec_serialized = SpecialisationSerializer(spec)
     return JsonResponse(spec_serialized.data, json_dumps_params={'indent': 2})
 
+
 @api_view(['GET'])
 def get_degree(request, deg_id):
   if not deg_code_check(deg_id):
     return JsonResponse({'error': 'Invalid code. Degree code must match the pattern [0-9]{4}'}, status=status.HTTP_400_BAD_REQUEST) 
-    
+
   try: 
     degree = Degrees.objects.get(pk=deg_id) 
   except Degrees.DoesNotExist: 
@@ -78,3 +82,35 @@ def get_degree(request, deg_id):
   if request.method == 'GET': 
     degree_serialized = DegreeSerializer(degree)
     return JsonResponse(degree_serialized.data, json_dumps_params={'indent': 2}) 
+
+@api_view(['GET'])
+def get_all_subjects(request):
+  if request.method == 'GET':
+    subjects = Subjects.objects.all()
+    all_subs = {}
+    for sub in subjects:
+      all_subs[sub.code] = sub.name
+    return JsonResponse(all_subs, json_dumps_params={'indent': 2})
+
+@api_view(['GET'])
+def get_all_subject_courses(request, sub_code):
+  if not subject_check(sub_code):
+    return JsonResponse({'error': 'Invalid code. Subject code must match the pattern [A-Z]{4}'}, status=status.HTTP_400_BAD_REQUEST)
+
+  try: 
+    sub_code = sub_code.upper()
+    subject = Subjects.objects.get(pk=sub_code)
+  except Subjects.DoesNotExist:
+     return JsonResponse({'message': 'This subject does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+  if request.method == 'GET':
+    sub_courses = SubjectSerializer(subject).data 
+    sub_code = sub_courses['code']
+    courses_qobj = Courses.objects.filter(subject=sub_code).values('code')
+    all_sub_courses = []
+    for course_q in courses_qobj:
+      all_sub_courses.append(course_q['code'])
+    sub_courses['courses'] = sorted(all_sub_courses)
+    return JsonResponse(sub_courses, json_dumps_params={'indent': 2})
+  
+

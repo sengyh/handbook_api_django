@@ -1,4 +1,4 @@
-from .models import CourseTerms, Courses, Degrees, Specialisations
+from .models import CourseTerms, Courses, Degrees, Specialisations, Subjects
 from rest_framework import serializers
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -33,3 +33,7 @@ class DegreeSerializer(serializers.ModelSerializer):
     model = Degrees
     fields = '__all__'
 
+class SubjectSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Subjects
+    fields = '__all__'

@@ -13,7 +13,13 @@ def spec_code_check(code):
   return False
 
 def deg_code_check(code):
-  spec_match = re.match(r'\d{4}', code)
-  if spec_match:
+  deg_match = re.match(r'\d{4}', code)
+  if deg_match:
+    return True
+  return False
+
+def subject_check(code):
+  sub_match = re.match(r'[a-zA-Z]{4}', code)
+  if (sub_match):
     return True
   return False

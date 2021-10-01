@@ -22,5 +22,7 @@ urlpatterns = [
     path('courses/<str:course_code>', views.get_course_full),
     path('courses/<str:course_code>/node', views.get_course_node),
     path('specialisations/<str:spec_id>', views.get_specialisation),
-    path('degrees/<str:deg_id>', views.get_degree)
+    path('degrees/<str:deg_id>', views.get_degree),
+    path('subjects/', views.get_all_subjects),
+    path('subjects/<str:sub_code>/courses', views.get_all_subject_courses)
 ]
