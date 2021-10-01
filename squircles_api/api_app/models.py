@@ -10,14 +10,42 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db.models.fields import TextField
 
 
-class CourseTerms(models.Model):
-    course = models.OneToOneField('Courses', models.DO_NOTHING, db_column='course', primary_key=True)
-    term = models.TextField()
+class Faculties(models.Model):
+    code = models.TextField(primary_key=True)
+    name = models.TextField(unique=True)
+    overview = models.TextField()
 
     class Meta:
         managed = False
-        db_table = 'course_terms'
-        unique_together = (('course', 'term'),)
+        db_table = 'faculties'
+
+
+class Schools(models.Model):
+    name = models.TextField(primary_key=True)
+    faculty = models.ForeignKey(Faculties, models.DO_NOTHING, db_column='faculty')
+
+    class Meta:
+        managed = False
+        db_table = 'schools'
+
+
+class Subjects(models.Model):
+    code = models.TextField(primary_key=True)
+    name = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'subjects'
+
+
+class SchoolsToSubjects(models.Model):
+    school = models.OneToOneField(Schools, models.DO_NOTHING, db_column='school', primary_key=True)
+    subject = models.ForeignKey('Subjects', models.DO_NOTHING, db_column='subject')
+
+    class Meta:
+        managed = False
+        db_table = 'schools_to_subjects'
+        unique_together = (('school', 'subject'),)
 
 
 class Courses(models.Model):
@@ -40,6 +68,30 @@ class Courses(models.Model):
     class Meta:
         managed = False
         db_table = 'courses'
+
+class CourseTerms(models.Model):
+    course = models.OneToOneField('Courses', models.DO_NOTHING, db_column='course', primary_key=True)
+    term = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'course_terms'
+        unique_together = (('course', 'term'),)
+
+
+class Specialisations(models.Model):
+    code = models.TextField(primary_key=True)
+    name = models.TextField()
+    overview = models.TextField()
+    type = models.TextField()
+    credits = models.IntegerField()
+    course_structure = ArrayField(models.JSONField())
+    more_information = ArrayField(models.JSONField())
+    school = models.ForeignKey(Schools, models.DO_NOTHING, db_column='school')
+
+    class Meta:
+        managed = False
+        db_table = 'specialisations'
 
 
 class Degrees(models.Model):
@@ -66,54 +118,3 @@ class Degrees(models.Model):
         managed = False
         db_table = 'degrees'
 
-class Faculties(models.Model):
-    code = models.TextField(primary_key=True)
-    name = models.TextField(unique=True)
-    overview = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'faculties'
-
-
-class Schools(models.Model):
-    name = models.TextField(primary_key=True)
-    faculty = models.ForeignKey(Faculties, models.DO_NOTHING, db_column='faculty')
-
-    class Meta:
-        managed = False
-        db_table = 'schools'
-
-
-class SchoolsToSubjects(models.Model):
-    school = models.OneToOneField(Schools, models.DO_NOTHING, db_column='school', primary_key=True)
-    subject = models.ForeignKey('Subjects', models.DO_NOTHING, db_column='subject')
-
-    class Meta:
-        managed = False
-        db_table = 'schools_to_subjects'
-        unique_together = (('school', 'subject'),)
-
-
-class Specialisations(models.Model):
-    code = models.TextField(primary_key=True)
-    name = models.TextField()
-    overview = models.TextField()
-    type = models.TextField()
-    credits = models.IntegerField()
-    course_structure = ArrayField(models.JSONField())
-    more_information = ArrayField(models.JSONField())
-    school = models.ForeignKey(Schools, models.DO_NOTHING, db_column='school')
-
-    class Meta:
-        managed = False
-        db_table = 'specialisations'
-
-
-class Subjects(models.Model):
-    code = models.TextField(primary_key=True)
-    name = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'subjects'

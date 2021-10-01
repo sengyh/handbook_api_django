@@ -1,27 +1,35 @@
-from .models import Courses, Degrees
+from .models import CourseTerms, Courses, Degrees, Specialisations
 from rest_framework import serializers
 
 class CourseSerializer(serializers.ModelSerializer):
   class Meta:
     model = Courses
+    fields = '__all__'
+
+class CourseGraphSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Courses
     fields = ('code',
               'name',
-              'overview',
-              'subject',
-              'level',
-              'school',
-              'credits',
               'equivalent_courses',
               'exclusion_courses',
               'unlocked_by',
               'unlocks',
               'other_requirements',
-              'is_gen_ed',
-              'is_intro',
-              'is_multi_term',
               )
+
+class CourseTermSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = CourseTerms
+    fields = ('term',)
+
+class SpecialisationSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Specialisations
+    fields = '__all__'
 
 class DegreeSerializer(serializers.ModelSerializer):
   class Meta:
     model = Degrees
     fields = '__all__'
+
