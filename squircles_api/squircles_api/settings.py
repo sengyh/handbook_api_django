@@ -26,12 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY_DEV2')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY_DEV')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['localhost']
+=======
+ALLOWED_HOSTS = ['*']
+>>>>>>> docker
 
 
 # Application definition
@@ -46,7 +50,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'api_app',
     'drf_yasg',
-    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -86,11 +89,11 @@ WSGI_APPLICATION = 'squircles_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME1'),
-        'USER': os.getenv('USERNAME1'),
-        'PASSWORD': os.getenv('PASSWORD1'),
-        'HOST': os.getenv('SERVER_ADDR1'),
-        'PORT': os.getenv('PORT1'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('USERNAME'),
+        'PASSWORD': os.getenv('PASSWORD'),
+        'HOST': os.getenv('SERVER_ADDR'),
+        'PORT': os.getenv('PORT'),
     }
 }
 
