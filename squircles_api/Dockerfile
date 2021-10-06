@@ -1,5 +1,6 @@
 # pull official base image
 FROM python:3.8.12-alpine
+
 ENV PYTHONUNBUFFERED=1
 # set work directory
 WORKDIR /Users/hoosyong/projects/handbook_api_django/squircles_api
@@ -14,3 +15,5 @@ RUN \
 
 # copy project
 COPY . /Users/hoosyong/projects/handbook_api_django/squircles_api
+EXPOSE 5000
+CMD [ "python", "manage.py", "runserver"]
