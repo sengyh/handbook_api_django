@@ -31,11 +31,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY_DEV')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-<<<<<<< HEAD
-ALLOWED_HOSTS = ['localhost']
-=======
 ALLOWED_HOSTS = ['*']
->>>>>>> docker
 
 
 # Application definition
